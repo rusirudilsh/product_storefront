@@ -4,10 +4,6 @@ import ProductList from '../components/ProductList.vue';
 
 <template>
   <main>
- <!-- <TheWelcome /> -->
-    
-  <ProductList></ProductList>
-  
-
+    <ProductList></ProductList>
   </main>
 </template>
