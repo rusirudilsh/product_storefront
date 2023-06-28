@@ -11,5 +11,4 @@ export const EnvironmentSettings = {
           'Content-Type': 'application/json'
       }),
       },
-
   };
