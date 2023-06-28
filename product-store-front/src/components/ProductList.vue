@@ -1,30 +1,41 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue"
-import {productList,categoryList} from "../services/ProductService"
+import {productList,categoryList, postOrder} from "../services/ProductService"
 import type { Product } from "../models/Products";
 import Dropdown from 'primevue/dropdown';
 import type { Category } from "../models/Categories";
 import Button from 'primevue/button';
-import ProgressSpinner from 'primevue/progressspinner';
 import Toast from 'primevue/toast';
 import { useToast } from "primevue/usetoast";
 import Checkbox from 'primevue/checkbox';
+import type { OrderItem, ProductOrder } from "../models/ProductOrder";
 
 
 const products = ref(new Array<Product>())
 const selectedCategory = ref("Filter by Category")
 const categories = ref(new Array<Category>());
 const isOnlyAvailableProducts = ref(false)
-const isSearchloading = ref(false);
-const isFetching = ref(true)
 const toast = useToast();
 
+const showProductLoadingError = () => {
+  toast.add({ severity: 'error', 
+  summary: 'Error Message', 
+  detail: 'Error Loading Products', 
+  life: 4000 });
+}
+
+const showProductPurchaseMessage = (isSuccess: boolean, messge?: string, statusCode?: number, ) => {
+  toast.add({ severity: isSuccess == true ? 'success' : 'error', 
+  summary: isSuccess ? 'Success' : 'Error Message' , 
+  detail: statusCode == 200 ? messge : "Error Processing Order", 
+  life: 4000 });
+}
 
 async function getProducts(){
   await productList()
   .then(res => {
     if (res.status != 200){
-      toast.add({ severity: 'error', summary: 'Error Message', detail: 'Error Loading Products', life: 3000 });
+      showProductLoadingError()
     }  
     return res.json()
   })
@@ -32,9 +43,8 @@ async function getProducts(){
     products.value = data?.products;
   })
   .catch(errror => {
-    toast.add({ severity: 'error', summary: 'Error Message', detail: 'Error Loading Products', life: 3000 });
+    showProductLoadingError()
   });
-  
 }
 
 async function getCategories() {
@@ -44,27 +54,45 @@ async function getCategories() {
     let category = {} as Category
     category.category_id = index;
     category.name = element
-    categories.value.push(category)
-
-  })}).catch(error=>{
-    toast.add({ severity: 'error', summary: 'Error Message', detail: 'Error Loading Product Categorties', life: 3000 });
+    categories.value.push(category)})})
+  .catch(error=>{
+    toast.add({ severity: 'error', 
+    summary: 'Error Message', 
+    detail: 'Error Loading Product Categorties', 
+    life: 4000 });
   });
  
 }
-
-function hi(){
-  console.log(isOnlyAvailableProducts.value)
-}
-
 
 async function filterPoructs() {
   
 }
 
+async function makePurchase(product: Product){
+  const orderItem = {"product_id" : product.product_id, "quantity": 1} as OrderItem;
+  const productOrder = {"items" : [orderItem], "total": product.price} as ProductOrder;
+  let statusCode = 0;
+  await postOrder(productOrder)
+  .then(res => {
+    statusCode = res.status;
+    return res.json()
+  })
+  .then(data => {
+    console.log(statusCode)
+    showProductPurchaseMessage(data?.isSuccess, data?.message, statusCode);
+  })
+  .catch(errror => {
+    showProductPurchaseMessage(false);
+  });
+ 
+}
+
+
+
+
 onMounted(async() => {
   await getProducts()
   await getCategories()
-  isFetching.value = false
 })
 
 </script>
@@ -72,16 +100,12 @@ onMounted(async() => {
 
 <template>
   <div>
-    <Toast />
-    <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="8" fill="var(--surface-ground)"
-    animationDuration=".7s" aria-label="Custom ProgressSpinner" />
     <div class="card flex justify-content-center">
         <Dropdown v-model="selectedCategory" :options="categories" optionLabel="name" placeholder="Select a City" class="w-full md:w-14rem" @change="hi()"/>
         <div class="flex align-items-center">
-        <Checkbox v-model="isOnlyAvailableProducts" inputId="availability"  :binary="true" @change="hi()"/>
-        <label for="availability" class="ml-2" > Show only availaple Products</label>
-    </div>
-        <!-- <Button type="button" label="Search" icon="pi pi-search" :loading="isSearchloading" @click="filterPoructs" size="small" /> -->
+          <Checkbox v-model="isOnlyAvailableProducts" inputId="availability"  :binary="true" @change="filterPoructs()"/>
+          <label for="availability" class="ml-2" > Show only availaple Products</label>
+        </div>
     </div>
     
     <div class="card-box-container">     
@@ -95,11 +119,12 @@ onMounted(async() => {
                   <p>£{{ product.price }}</p>
               </div>   
               <div>
-                <Button icon="pi pi-check" label="Buy" size="small"/>
+                <Button icon="pi pi-check" label="Buy" size="small" @click="makePurchase(product)"/>
               </div>     
           </div>
       </div>
     </div>
+    <Toast />
   </div>
     
    
