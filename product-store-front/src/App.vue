@@ -5,8 +5,8 @@ import { RouterLink, RouterView } from 'vue-router'
 
 <template>
   <header>
-    <h1>R & H Products</h1>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+    <!-- <h1>R & H Products</h1> -->
+    <img alt="Store logo" class="logo" src="@/assets/img/prod_logo.png" width="125" height="125"/>
     <div class="wrapper">
       <nav>
         <RouterLink to="/">Home</RouterLink>
@@ -26,6 +26,7 @@ header {
 .logo {
   display: block;
   margin: 0 auto 2rem;
+  border-radius: 25px;
 }
 
 nav {
