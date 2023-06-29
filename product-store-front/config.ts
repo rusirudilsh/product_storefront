@@ -5,8 +5,8 @@ export const EnvironmentSettings = {
       environmentName: "Dev",
       productListPageSettings:{
         paginatorSettings:{
-          itemsPerPage:5,
-          rowsOptions: [5, 10, 20]
+          itemsPerPage:10,
+          rowsOptions: [10, 20]
         }
       }
     },

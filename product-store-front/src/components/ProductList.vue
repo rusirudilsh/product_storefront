@@ -137,11 +137,13 @@ onMounted(async() => {
 <template>
   <div>
     <div class="card flex justify-content-end filter-bar">
-        <Dropdown v-model="selectedCategory" :options="categories" optionLabel="name" placeholder="Filter by Category" class="select-category" @change="filterProductList()"/>
+        <Dropdown v-model="selectedCategory" :options="categories" optionLabel="name" 
+        placeholder="Filter by Category" class="select-category" @change="filterProductList()"/>
         <div class="flex align-items-center">
           <Checkbox class="ml-3" v-model="isOnlyAvailableProducts" inputId="availability"  :binary="true" @change="filterProductList()"/>
-          <label for="availability" class="ml-2 font-semibold"> Show only Available</label>
-          <Button class="ml-2 btn-clear" :disabled="selectedCategory.category_id === -1 && !isOnlyAvailableProducts" icon="pi pi-times" label="Clear" severity="danger" text rounded aria-label="Cancel"  @click="resetFilters()"/>
+          <label for="availability" class="ml-2 font-semibold"> Only Available Products</label>
+          <Button class="ml-2 btn-clear" :disabled="selectedCategory.category_id === -1 && !isOnlyAvailableProducts" 
+          icon="pi pi-times" label="Clear" severity="danger" text rounded aria-label="Cancel"  @click="resetFilters()"/>
         </div>
     </div>
     
