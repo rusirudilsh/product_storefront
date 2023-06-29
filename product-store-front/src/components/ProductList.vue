@@ -53,11 +53,8 @@ async function getProducts(){
     if (res.status != 200){
       showProductLoadingError()
     }  
-    return res.json()
-  })
-  .then(data => {
-    products.value = data?.products;
-    totalProductCount.value = data?.productCount;
+    products.value = res.data?.products;
+    totalProductCount.value = res.data?.productCount;
     isLoading.value = false
   })
   .catch(errror => {
@@ -67,8 +64,8 @@ async function getProducts(){
 
 async function getCategories() {
   await categoryList()
-  .then(data=>{
-    data?.productCategories.forEach((element: string, index: number) => {
+  .then(res=>{
+    res.data?.productCategories.forEach((element: string, index: number) => {
     let category = {} as Category
     category.category_id = index;
     category.name = element
@@ -90,18 +87,14 @@ async function makePurchase(product: Product){
   await postOrder(productOrder)
   .then(res => {
     statusCode = res.status;
-    return res.json()
-  })
-  .then(async data => {
-    if(statusCode == 200 && data?.isSuccess){
+    if(statusCode == 200 && res.data?.isSuccess){
       product.stock_count = product.stock_count - 1;
     }
-    showProductPurchaseMessage(data?.isSuccess, data?.message, statusCode);
+    showProductPurchaseMessage(res.data?.isSuccess, res.data?.message, statusCode);
   })
   .catch(errror => {
     showProductPurchaseMessage(false);
-  });
- 
+  }); 
 }
 
 const handlePagination = async () => {
@@ -117,7 +110,7 @@ const getProductInventoryStatus = (product: Product) => {
 }
 
 const filterProductList = async () =>{
-  //if filter is perfomed, then check whether filetered result count is greater than the first page
+  //if filter is perfomed, then check whether filetered result count is greater than the first (current product count)
   //if so set the first page to (adjust the paginator according to the filer result) 
   if(totalProductCount.value > firstPage.value){
       firstPage.value = 0;
@@ -131,6 +124,7 @@ const resetFilters = async () => {
     isOnlyAvailableProducts.value = false;
     await getProducts()
 }
+
 
 onMounted(async() => {
   await getProducts()
@@ -221,6 +215,7 @@ onMounted(async() => {
 .p-button {
   padding: 0.4rem 0.4rem !important;
 }
+
 
 @media only screen and (max-width: 600px) {
   .btn-clear {

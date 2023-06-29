@@ -11,9 +11,14 @@
 a,
 .green {
   text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
+  color: var(--color-text);
   transition: 0.4s;
 }
+
+.p-paginator {
+  padding: 0.2rem 0.2rem !important;
+}
+
 
 @media (hover: hover) {
   a:hover {

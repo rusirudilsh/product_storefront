@@ -12,9 +12,9 @@ export const EnvironmentSettings = {
     },
     productsAPISettings: {
         baseUrl: 'http://localhost:8000/',
-        headers: new Headers({
+        headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
-      }),
+        },
       },
   };
