@@ -136,7 +136,7 @@ onMounted(async() => {
 
 <template>
   <div>
-    <div class="card flex justify-content-end filter-bar">
+    <div class="card flex justify-content-center filter-bar">
         <Dropdown v-model="selectedCategory" :options="categories" optionLabel="name" 
         placeholder="Filter by Category" class="select-category" @change="filterProductList()"/>
         <div class="flex align-items-center">
@@ -187,9 +187,9 @@ onMounted(async() => {
    
 </template>
 
+
+
 <style scoped>
-
-
 .card-box-container{
   width: 1142px;
   margin: 0 auto;
@@ -224,6 +224,5 @@ onMounted(async() => {
   width: 60%;
   }
 }
-
 
 </style>
