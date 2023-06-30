@@ -59,7 +59,12 @@ npm run lint
 7. 
 
 ## Set up and run in Docker environment
-1. clone the repo
-2. open the cloned project root folder
-3. run the command "docker-compose up -d" (-d = detached mode)
-4. navigate to http://localhost:4200
+
+```sh
+run the command "docker-compose up -d" (-d = detached mode)
+```
+
+```sh
+navigate to http://localhost:4200
+```
+
