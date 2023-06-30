@@ -24,8 +24,13 @@ See [Vite Configuration Reference](https://vitejs.dev/config/).
 ## Project Setup
 
 ```sh
-switch to development branch
+switch to the development branch
 ```
+```sh
+navigate to the product-store-front directory
+```
+
+
 
 ```sh
 npm install
@@ -63,7 +68,11 @@ npm run lint
 ## Set up and run in Docker environment
 
 ```sh
-switch to development branch
+switch to the development branch
+```
+
+```sh
+navigate to the product-store-front directory
 ```
 
 ```sh
