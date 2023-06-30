@@ -63,6 +63,10 @@ npm run lint
 ## Set up and run in Docker environment
 
 ```sh
+switch to development branch
+```
+
+```sh
 run the command "docker-compose up -d" (-d = detached mode)
 ```
 
