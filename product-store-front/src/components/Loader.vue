@@ -43,6 +43,7 @@ onMounted(async() => {
     position: absolute;
     left: calc(50% - 50px);
     top: calc(50% - 100px);
+    z-index: 999;
 }
 
 </style>

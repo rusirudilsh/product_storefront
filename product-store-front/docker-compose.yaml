@@ -1,0 +1,12 @@
+# for local development
+version: '3'
+services:
+  storefont:
+    build:
+      context: .
+      target: 'build'
+    ports:
+    - '4200:4200'
+    volumes:
+    - '.:/storefont'
+    command: /bin/sh -c "npm run dev"

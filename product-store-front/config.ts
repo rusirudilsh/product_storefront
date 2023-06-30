@@ -1,7 +1,7 @@
 export const EnvironmentSettings = {
     production: false , 
     appSettings: {
-      title: "RD Products Store",
+      title: "R&H Products Store",
       environmentName: "Dev",
       productListPageSettings:{
         paginatorSettings:{
