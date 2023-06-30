@@ -56,8 +56,6 @@ npm run lint
 ```
 
 
-7. 
-
 ## Set up and run in Docker environment
 
 ```sh
