@@ -33,6 +33,10 @@ npm install
 npm run dev
 ```
 
+```sh
+navigate to http://localhost:4200/
+```
+
 ### Type-Check, Compile and Minify for Production
 
 ```sh
@@ -50,3 +54,12 @@ npm run test:unit
 ```sh
 npm run lint
 ```
+
+
+7. 
+
+## Set up and run in Docker environment
+1. clone the repo
+2. open the cloned project root folder
+3. run the command "docker-compose up -d" (-d = detached mode)
+4. navigate to http://localhost:4200
