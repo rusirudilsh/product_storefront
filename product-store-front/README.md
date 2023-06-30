@@ -86,6 +86,7 @@ navigate to http://localhost:4200
 ```sh
 Product Store Home page
 ```
-![image](https://github.com/rusirudilsh/product_storefront/assets/12104625/bcf126bf-1b4c-46af-8d0b-7f7b1f68e9fa)
+![image](https://github.com/rusirudilsh/product_storefront/assets/12104625/5dbcb0de-480f-43cf-8d68-4375185d977d)
+
 
 
