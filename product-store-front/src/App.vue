@@ -1,19 +1,22 @@
 <script setup lang="ts">
+import axios from 'axios';
+import { onMounted } from 'vue';
 import { RouterLink, RouterView } from 'vue-router'
-
+import Loader from './components/Loader.vue';
 </script>
 
 <template>
   <header>
-    <h1>R & H Products</h1>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+    <!-- <h1>R & H Products</h1> -->
+    <img alt="Store logo" class="logo" src="@/assets/img/prod_logo.png" width="100" height="100"/>
     <div class="wrapper">
       <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
+        <RouterLink to="/" class="font-bold">Home</RouterLink>
+        <RouterLink to="/about" class="font-bold">About</RouterLink>
       </nav>
     </div>
   </header>
+  <Loader></Loader>
   <RouterView />
 </template>
 
@@ -26,6 +29,7 @@ header {
 .logo {
   display: block;
   margin: 0 auto 2rem;
+  border-radius: 25px;
 }
 
 nav {
@@ -36,7 +40,7 @@ nav {
 }
 
 nav a.router-link-exact-active {
-  color: var(--color-text);
+  color: hsla(160, 100%, 37%, 1);
 }
 
 nav a.router-link-exact-active:hover {

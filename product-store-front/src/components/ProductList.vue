@@ -11,6 +11,9 @@ import Checkbox from 'primevue/checkbox';
 import type { OrderItem, ProductOrder } from "../models/ProductOrder";
 import Paginator from 'primevue/paginator';
 import Tag from 'primevue/tag';
+import { EnvironmentSettings } from "../../config";
+import Message from 'primevue/message';
+
 
 const products = ref(new Array<Product>())
 const totalProductCount = ref(0)
@@ -20,7 +23,12 @@ const categories = ref(new Array<Category>());
 const isOnlyAvailableProducts = ref(false)
 const toast = useToast();
 const firstPage = ref(0)
-const productsPerPage = ref(10)
+const isLoading = ref(true)
+const productsPerPage = ref(EnvironmentSettings
+                            .appSettings
+                            .productListPageSettings
+                            .paginatorSettings
+                            .itemsPerPage)
 
 const showProductLoadingError = () => {
   toast.add({ severity: 'error', 
@@ -37,7 +45,6 @@ const showProductPurchaseMessage = (isSuccess: boolean, messge?: string, statusC
 }
 
 async function getProducts(){
-  console.log(selectedCategory.value)
   await productList(selectedCategory.value.name, 
   isOnlyAvailableProducts.value, 
   firstPage.value, 
@@ -46,11 +53,9 @@ async function getProducts(){
     if (res.status != 200){
       showProductLoadingError()
     }  
-    return res.json()
-  })
-  .then(data => {
-    products.value = data?.products;
-    totalProductCount.value = data?.product_count;
+    products.value = res.data?.products;
+    totalProductCount.value = res.data?.productCount;
+    isLoading.value = false
   })
   .catch(errror => {
     showProductLoadingError()
@@ -59,8 +64,8 @@ async function getProducts(){
 
 async function getCategories() {
   await categoryList()
-  .then(data=>{
-    data?.productCategories.forEach((element: string, index: number) => {
+  .then(res=>{
+    res.data?.productCategories.forEach((element: string, index: number) => {
     let category = {} as Category
     category.category_id = index;
     category.name = element
@@ -82,22 +87,21 @@ async function makePurchase(product: Product){
   await postOrder(productOrder)
   .then(res => {
     statusCode = res.status;
-    return res.json()
-  })
-  .then(data => {
-    showProductPurchaseMessage(data?.isSuccess, data?.message, statusCode);
+    if(statusCode == 200 && res.data?.isSuccess){
+      product.stock_count = product.stock_count - 1;
+    }
+    showProductPurchaseMessage(res.data?.isSuccess, res.data?.message, statusCode);
   })
   .catch(errror => {
     showProductPurchaseMessage(false);
-  });
- 
+  }); 
 }
 
-async function handlePagination() {
+const handlePagination = async () => {
   await getProducts();
 }
 
-const getSeverity = (product: Product) => {
+const getSeverityLevel = (product: Product) => {
   return product.stock_count > 0 ? "success" : "danger";
 };
 
@@ -105,11 +109,22 @@ const getProductInventoryStatus = (product: Product) => {
   return product.stock_count > 0 ? 'INSTOCK' : 'OUTOFSTOCK';
 }
 
+const filterProductList = async () =>{
+  //if filter is perfomed, then check whether filetered result count is greater than the first (current product count)
+  //if so set the first page to (adjust the paginator according to the filer result) 
+  if(totalProductCount.value > firstPage.value){
+      firstPage.value = 0;
+    }
+    await getProducts()
+
+}
+
 const resetFilters = async () => {
     selectedCategory.value = defaulCategory;
     isOnlyAvailableProducts.value = false;
     await getProducts()
 }
+
 
 onMounted(async() => {
   await getProducts()
@@ -122,11 +137,13 @@ onMounted(async() => {
 <template>
   <div>
     <div class="card flex justify-content-end filter-bar">
-        <Dropdown v-model="selectedCategory" :options="categories" optionLabel="name" placeholder="Filter by Category" class="" @change="getProducts()"/>
+        <Dropdown v-model="selectedCategory" :options="categories" optionLabel="name" 
+        placeholder="Filter by Category" class="select-category" @change="filterProductList()"/>
         <div class="flex align-items-center">
-          <Checkbox class="ml-3" v-model="isOnlyAvailableProducts" inputId="availability"  :binary="true" @change="getProducts()"/>
-          <label for="availability" class="ml-2" > Show only availaple Products</label>
-          <Button class="ml-3" label="Clear" icon="pi pi-times" severity="danger" text raised rounded aria-label="Cancel" @click="resetFilters()"/>
+          <Checkbox class="ml-3" v-model="isOnlyAvailableProducts" inputId="availability"  :binary="true" @change="filterProductList()"/>
+          <label for="availability" class="ml-2 font-semibold"> Only Available Products</label>
+          <Button class="ml-2 btn-clear" :disabled="selectedCategory.category_id === -1 && !isOnlyAvailableProducts" 
+          icon="pi pi-times" label="Clear" severity="danger" text rounded aria-label="Cancel"  @click="resetFilters()"/>
         </div>
     </div>
     
@@ -139,38 +156,30 @@ onMounted(async() => {
                         <i class="pi pi-tag"></i>
                         <span class="font-semibold">{{ product.category }}</span>
                     </div>
-                    <Tag :value="getProductInventoryStatus(product)" :severity="getSeverity(product)"></Tag>
+                    <Tag :value="getProductInventoryStatus(product)" :severity="getSeverityLevel(product)"></Tag>
                 </div>
                 <div class="flex flex-column align-items-center gap-3 py-5">
                     <!-- <img class="w-9 shadow-2 border-round" :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.data.image}`" :alt="slotProps.data.name" /> -->
-                    <div class="text-2xl font-bold">{{ product.name }}</div>
-                    <Rating value="{product.rating}" readonly :cancel="false"></Rating>
+                    <div class="text-2xl font-semibold">{{ product.name }}</div>
                 </div>
                 <div class="flex align-items-center justify-content-between">
-                    <span class="text-2xl font-semibold">£{{ product.price }}</span>
-                    <Button icon="pi pi-shopping-cart" label="Buy" rounded :disabled="getProductInventoryStatus(product) === 'OUTOFSTOCK'"></Button>
+                    <span class="text-xl font-semibold">£{{ product.price }}</span>
+                    <Button icon="pi pi-shopping-cart" label="Buy" rounded 
+                    :disabled="getProductInventoryStatus(product) === 'OUTOFSTOCK'" @click="makePurchase(product)"></Button>
                 </div>
             </div>
         </div>
-        
-          <!-- <div class="product-card" v-for="product in products" :key="product.product_id">
-      
-              <div class="product-details-container">
-                  <h3><b>{{ product.name }}</b></h3>
-                  <h4><b>{{ product.category }}</b></h4>
-                  <p>£{{ product.price }}</p>
-                  <Tag :value="getProductInventoryStatus(product)" :severity="getSeverity(product)"></Tag>
-              </div>   
-              <div>
-                <Button icon="pi pi-check" label="Buy" size="small" @click="makePurchase(product)"/>
-              </div>     
-          </div> -->
       </div>
       <div class="card" v-if="products.length > 0">
         <Paginator v-model:first="firstPage" v-model:rows="productsPerPage" 
-        :totalRecords="totalProductCount" :rowsPerPageOptions="[10, 20]"  
+        :totalRecords="totalProductCount" :rowsPerPageOptions="EnvironmentSettings
+                            .appSettings
+                            .productListPageSettings
+                            .paginatorSettings
+                            .rowsOptions"  
         v-on:page="handlePagination()"></Paginator>
       </div>
+      <Message :closable="false" v-if="products.length == 0 && !isLoading">No products found</Message>
     </div>
     <Toast />
   </div>
@@ -195,7 +204,25 @@ onMounted(async() => {
   align-items: flex-start;
   -ms-flex-wrap: wrap;
   flex-wrap: wrap;
-  padding: 50px 0;
+  padding: 15px 0;
+}
+
+.select-category {
+  width: 200px;
+}
+.p-tag {
+    font-size: 0.65rem !important;
+}
+
+.p-button {
+  padding: 0.4rem 0.4rem !important;
+}
+
+
+@media only screen and (max-width: 600px) {
+  .btn-clear {
+  width: 60%;
+  }
 }
 
 
