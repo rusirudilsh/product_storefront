@@ -33,6 +33,10 @@ npm install
 npm run dev
 ```
 
+```sh
+navigate to http://localhost:4200/
+```
+
 ### Type-Check, Compile and Minify for Production
 
 ```sh
@@ -50,3 +54,15 @@ npm run test:unit
 ```sh
 npm run lint
 ```
+
+
+## Set up and run in Docker environment
+
+```sh
+run the command "docker-compose up -d" (-d = detached mode)
+```
+
+```sh
+navigate to http://localhost:4200
+```
+
