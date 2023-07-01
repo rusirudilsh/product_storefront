@@ -111,7 +111,7 @@ const getProductInventoryStatus = (product: Product) => {
 
 const filterProductList = async () =>{
   //if filter is perfomed, then check whether filetered result count is greater than the first (current product count)
-  //if so set the first page to (adjust the paginator according to the filer result) 
+  //if so set the first page to (adjust the paginator according to the filer result) 0.
   if(totalProductCount.value > firstPage.value){
       firstPage.value = 0;
     }
