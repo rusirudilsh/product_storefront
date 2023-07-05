@@ -73,7 +73,7 @@ async function getCategories() {
   .catch(error=>{
     toast.add({ severity: 'error', 
     summary: 'Error Message', 
-    detail: 'Error Loading Product Categorties', 
+    detail: 'Error Loading Product Categories', 
     life: 4000 });
   });
  
